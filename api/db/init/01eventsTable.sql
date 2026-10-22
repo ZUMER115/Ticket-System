@@ -1,0 +1,6 @@
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    date TIMESTAMPTZ DEFAULT NOW(),
+    seats INT NOT NULL
+);

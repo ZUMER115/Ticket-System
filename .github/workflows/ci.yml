@@ -1,0 +1,42 @@
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy-to-EC2:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Load SSH key
+              env:
+                SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                EC2_HOST: ${{ secrets.EC2_HOST }}
+              run: |
+                mkdir -p ~/.ssh
+                echo "$SSH_PRIVATE_KEY" > ~/.ssh/id
+                chmod 600 ~/.ssh/ids
+                ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+            
+            - name: Copy and Deploy to EC2
+              env:
+                POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+                POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+                POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+                EC2_HOST: ${{ secrets.EC2_HOST }}
+                EC2_USER: ${{ secrets.EC2_USER }}
+              run: |
+                rsync -avz -e "ssh -i ~/.ssh/id" ./ $EC2_USER@$EC2_HOST:~/ticketApp
+                ssh -i ~/.ssh/id $EC2_USER@$EC2_HOST << EOF 
+                  cd ~/ticketApp
+                  echo "POSTGRES_DB=$POSTGRES_DB" > .env
+                  echo "POSTGRES_USER=$POSTGRES_USER" >> .env
+                  echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+                  echo "DB_HOST=db" >> .env
+                  echo "PORT=3000" >> .env
+                  docker compose down || true
+                  docker compose up --build -d 
+
+                EOF
