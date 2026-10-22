@@ -17,7 +17,7 @@ jobs:
               run: |
                 mkdir -p ~/.ssh
                 echo "$SSH_PRIVATE_KEY" > ~/.ssh/id
-                chmod 600 ~/.ssh/ids
+                chmod 600 ~/.ssh/id
                 ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
             
             - name: Copy and Deploy to EC2
