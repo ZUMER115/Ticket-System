@@ -36,7 +36,7 @@ jobs:
                   echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
                   echo "DB_HOST=db" >> .env
                   echo "PORT=3000" >> .env
-                  docker compose down || true
+                  docker compose down -v 
                   docker compose up --build -d
 
                 EOF
