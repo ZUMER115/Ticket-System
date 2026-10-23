@@ -8,4 +8,4 @@ RUN npm ci
 
 COPY . .
 
-CMD ['node', 'api/index.js']
+CMD ["node", "./api/index.js"]
