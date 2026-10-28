@@ -1,4 +1,5 @@
 const pool = require('../db/db.js')
+const { ticketQueue } = require('../queue/queue.js')
 
 const getTickets = async (req, res) => {
     const { id } = req.params
@@ -16,8 +17,8 @@ const getTickets = async (req, res) => {
 const addReservation = async (req, res) => {
     const { event, user} = req.body
     try {
-        const response = await pool.query('INSERT INTO tickets (event, user) VALUES ($1, $2) RETURNING *', [event, user])
-        return res.status(201).json({message: "Reservation added", data: response.rows})
+        const job = await ticketQueue.add('reserve', { event, user })
+        return res.status(202).json({message: "Reservation queued", jobId: job.id})
     } catch (error) {
         return res.status(500).json({message: "Internal Server Error", errorMessage: error.message})
     }
