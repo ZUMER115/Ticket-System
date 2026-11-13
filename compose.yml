@@ -11,7 +11,7 @@ services:
       start_period: 30s
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d
+      - ./api/db/init:/docker-entrypoint-initdb.d:ro
   api:
     build: .
     env_file:
