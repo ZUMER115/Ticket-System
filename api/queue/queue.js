@@ -8,4 +8,3 @@ const connection = {
 const ticketQueue = new Queue('ticketQueue', { connection })
 
 module.exports = { ticketQueue, connection }
-

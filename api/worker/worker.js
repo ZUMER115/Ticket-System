@@ -13,7 +13,7 @@ const worker = new Worker('ticketQueue', async (job) => {
         if (result.rowCount === 0) {
             throw new Error("Event not found or sold out")
         }
-        return result.rows[0] || null
+        return result.rows[0]
     } catch (error) {
         throw error
     }
@@ -23,10 +23,10 @@ const worker = new Worker('ticketQueue', async (job) => {
 
 
 
-worker.on('failed', (job, err) => 
-    console.error(`Job ${job?.id} failed:`, err.message)
-)
+worker.on('failed', (job, err) => {
+    console.error(`Job ${job.id} failed:`, err.message)
+})
 
-worker.on('completed', (job) => 
-    console.log(`Job ${job?.id} completed successfully`)
-)
+worker.on('completed', (job) => {
+    console.log(`Job ${job.id} completed successfully`)
+})
